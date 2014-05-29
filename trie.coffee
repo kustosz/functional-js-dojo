@@ -47,6 +47,14 @@ get = (trie, index) ->
 push = (trie, value) ->
   set(trie, trie.size, value)
 
+pop = (trie) ->
+  if trie.size == 0
+    trie
+  else if (trie.size - 1) <= (1 << trie.depth) && trie.depth > 1
+    Trie(trie.depth - 1, trie.root[0], trie.size - 1)
+  else
+    Trie(trie.depth, updatedNode(trie.root, trie.size - 1, undefined, trie.depth), trie.size - 1)
+
 size = (trie) -> trie.size
 
 module.exports =
@@ -54,4 +62,5 @@ module.exports =
   set: set
   get: get
   push: push
+  pop: pop
   size: size

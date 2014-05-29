@@ -26,3 +26,17 @@ describe 'push', ->
   it 'updated structure size', ->
     expect(trie.size(@res)).toEqual(7)
     expect(trie.size(@array)).toEqual(6)
+
+describe 'pop', ->
+  beforeEach ->
+    @array = trie.set(trie.set(trie.empty(), 5, "val1"), 6, "val2")
+    @res = trie.pop(@array)
+
+  it 'removes the last element in the structure', ->
+    expect(trie.get(@res, 6)).not.toBeDefined()
+    expect(trie.get(@array, 6)).toEqual("val2")
+
+  it 'updates structure size', ->
+    expect(trie.size(@res)).toEqual(6)
+    expect(trie.size(@array)).toEqual(7)
+
