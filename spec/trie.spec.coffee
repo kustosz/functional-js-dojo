@@ -15,3 +15,14 @@ describe 'set and get', ->
     expect(trie.size(@array)).toEqual(0)
     expect(trie.size(@res)).toEqual(8)
 
+describe 'push', ->
+  beforeEach ->
+    @array = trie.set(trie.empty(), 5, "value")
+    @res = trie.push(@array, 10)
+
+  it 'appends element as the last in the structure', ->
+    expect(trie.get(@res, 6)).toEqual(10)
+
+  it 'updated structure size', ->
+    expect(trie.size(@res)).toEqual(7)
+    expect(trie.size(@array)).toEqual(6)

@@ -44,10 +44,14 @@ set = (trie, index, value) ->
 get = (trie, index) ->
   getNode(trie.root, index, trie.depth)
 
+push = (trie, value) ->
+  set(trie, trie.size, value)
+
 size = (trie) -> trie.size
 
 module.exports =
   empty: empty
   set: set
   get: get
+  push: push
   size: size
