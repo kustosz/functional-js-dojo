@@ -1,3 +1,6 @@
+curry = (arg, fun, arity) ->
+  return (args...) -> fun(arg, args...)
+
 Node = (left, right) ->
   0: left
   1: right
@@ -29,13 +32,20 @@ Trie = (depth, root, size) ->
   depth ||= 1
   root ||= nodeWithDepth(depth)
   size ||= 0
-  depth: depth
-  root: root
-  size: size
+  self =
+    depth: depth
+    root: root
+    size: () -> size
+  self.push = curry(self, push, 2)
+  self.pop = curry(self, pop, 1)
+  self.set = curry(self, set, 3)
+  self.get = curry(self, get, 2)
+  self
+
 empty = -> Trie()
 
 set = (trie, index, value) ->
-  newSize = Math.max(trie.size, index + 1)
+  newSize = Math.max(trie.size(), index + 1)
   if index >= (1 << trie.depth)
     set(Trie(trie.depth + 1, Node(trie.root, nodeWithDepth(trie.depth)), newSize), index, value)
   else
@@ -45,17 +55,17 @@ get = (trie, index) ->
   getNode(trie.root, index, trie.depth)
 
 push = (trie, value) ->
-  set(trie, trie.size, value)
+  set(trie, trie.size(), value)
 
 pop = (trie) ->
-  if trie.size == 0
+  if trie.size() == 0
     trie
-  else if (trie.size - 1) <= (1 << trie.depth) && trie.depth > 1
-    Trie(trie.depth - 1, trie.root[0], trie.size - 1)
+  else if (trie.size() - 1) <= (1 << (trie.depth - 1)) && trie.depth > 1
+    Trie(trie.depth - 1, trie.root[0], trie.size() - 1)
   else
-    Trie(trie.depth, updatedNode(trie.root, trie.size - 1, undefined, trie.depth), trie.size - 1)
+    Trie(trie.depth, updatedNode(trie.root, trie.size() - 1, undefined, trie.depth), trie.size() - 1)
 
-size = (trie) -> trie.size
+size = (trie) -> trie.size()
 
 module.exports =
   empty: empty

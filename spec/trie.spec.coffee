@@ -17,19 +17,19 @@ describe 'set and get', ->
 
 describe 'push', ->
   beforeEach ->
-    @array = trie.set(trie.empty(), 5, "value")
+    @array = trie.empty().set(5, "value")
     @res = trie.push(@array, 10)
 
   it 'appends element as the last in the structure', ->
     expect(trie.get(@res, 6)).toEqual(10)
 
-  it 'updated structure size', ->
+  it 'updates structure size', ->
     expect(trie.size(@res)).toEqual(7)
     expect(trie.size(@array)).toEqual(6)
 
 describe 'pop', ->
   beforeEach ->
-    @array = trie.set(trie.set(trie.empty(), 5, "val1"), 6, "val2")
+    @array = trie.empty().set(5, "val1").set(6, "val2")
     @res = trie.pop(@array)
 
   it 'removes the last element in the structure', ->
