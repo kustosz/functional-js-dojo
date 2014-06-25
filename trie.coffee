@@ -28,49 +28,60 @@ getNode = (node, key, depth) ->
   else
     getNode(node[0], key, depth - 1)
 
-Trie = (depth, root, size) ->
+Trie = (depth, root, size, offset) ->
   depth ||= 1
   root ||= nodeWithDepth(depth)
   size ||= 0
+  offset ||= 0
   self =
     depth: depth
     root: root
     size: () -> size
+    offset: offset
   self.push = curry(self, push, 2)
   self.pop = curry(self, pop, 1)
   self.set = curry(self, set, 3)
   self.get = curry(self, get, 2)
+  self.shift = curry(self, shift, 1)
+  self.toArray = curry(self, toArray, 1)
   self
 
 empty = -> Trie()
 
 set = (trie, index, value) ->
-  newSize = Math.max(trie.size(), index + 1)
+  newOffset = Math.min(trie.offset, index)
+  newSize = Math.max(trie.size(), index + 1) + trie.offset - newOffset
   if index >= (1 << trie.depth)
-    set(Trie(trie.depth + 1, Node(trie.root, nodeWithDepth(trie.depth)), newSize), index, value)
+    set(Trie(trie.depth + 1, Node(trie.root, nodeWithDepth(trie.depth)), newSize, newOffset), index, value)
   else
-    Trie(trie.depth, updatedNode(trie.root, index, value, trie.depth), newSize)
+    Trie(trie.depth, updatedNode(trie.root, index, value, trie.depth), newSize, newOffset)
 
 get = (trie, index) ->
-  getNode(trie.root, index, trie.depth)
+  getNode(trie.root, index + trie.offset, trie.depth)
 
 push = (trie, value) ->
-  set(trie, trie.size(), value)
+  set(trie, trie.size() + trie.offset, value)
 
 pop = (trie) ->
   if trie.size() == 0
     trie
   else if (trie.size() - 1) <= (1 << (trie.depth - 1)) && trie.depth > 1
-    Trie(trie.depth - 1, trie.root[0], trie.size() - 1)
+    Trie(trie.depth - 1, trie.root[0], trie.size() - 1, trie.offset)
   else
-    Trie(trie.depth, updatedNode(trie.root, trie.size() - 1, undefined, trie.depth), trie.size() - 1)
+    Trie(trie.depth, updatedNode(trie.root, trie.size() - 1, undefined, trie.depth), trie.size() - 1, trie.offset)
+
+shift = (trie) ->
+  if trie.size() == 0
+    trie
+  else if trie.offset + 1 >= (1 << (trie.depth - 1)) && trie.depth > 1
+    Trie(trie.depth - 1, trie.root[1], trie.size() - 1, 0)
+  else
+    Trie(trie.depth, updatedNode(trie.root, trie.offset, undefined, trie.depth), trie.size() - 1, trie.offset + 1)
 
 size = (trie) -> trie.size()
 
+toArray = (trie) ->
+  (trie.get(i) for i in [0...trie.size()])
+
 module.exports =
   empty: empty
-  set: set
-  get: get
-  push: push
-  pop: pop
-  size: size
