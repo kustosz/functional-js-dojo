@@ -53,3 +53,8 @@ describe 'shift', ->
     expect(@array.size()).toEqual(5)
     expect(@res.size()).toEqual(4)
 
+describe 'toArray', ->
+  it 'dumps trie contents to array', ->
+    ary = trie.empty().push(1).push(2).push(3).push(4).push(5)
+    expect(ary.toArray()).toEqual([1, 2, 3, 4, 5])
+

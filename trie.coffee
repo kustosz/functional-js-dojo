@@ -36,7 +36,7 @@ Trie = (depth, root, size, offset) ->
   self =
     depth: depth
     root: root
-    size: () -> size
+    size: -> size
     offset: offset
   self.push = curry(self, push, 2)
   self.pop = curry(self, pop, 1)
